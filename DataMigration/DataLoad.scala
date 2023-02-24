@@ -3,14 +3,6 @@
 
 // COMMAND ----------
 
-// MAGIC %python
-// MAGIC #to get all latest file
-// MAGIC df = get_latest_modified_file_from_directory('/mnt/' )
-// MAGIC spark.catalog.dropTempView("df_FileList")
-// MAGIC df.createTempView("df_FileList")
-
-// COMMAND ----------
-
 var df = spark.sql("select * from df_FileList")
 var df1 = sqlContext.table("df_FileList")
 display(df1)
@@ -19,6 +11,8 @@ display(df1)
 
 //to get all tables details to load
 var df_TableEntity = get_load_entity()
+
+display(df_TableEntity)
 
 // COMMAND ----------
 

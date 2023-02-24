@@ -3,15 +3,13 @@
 
 // COMMAND ----------
 
-import org.apache.spark.sql.functions
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.DataFrame
 
 // COMMAND ----------
 
-def get_dataframe = (query: String) =>
-{
-    try
-    {
+//def get_dataframe = (query: String)  =>
+def get_dataframe(query: String) : DataFrame = {
         val df_TableEntity = spark.read
                               .format("jdbc")
                               .option("driver", driver)
@@ -19,15 +17,7 @@ def get_dataframe = (query: String) =>
                               .option("dbtable", query)
                               .load()
 
-         //return df_TableEntity
-    }
-    catch 
-    {
-       case unknown: Exception => {
-        println(s"Unknown exception: $unknown")
-        None
-      }
-    }
+         return df_TableEntity
 }
 
 
@@ -50,12 +40,10 @@ def jdbcrunquery = (query: String) =>
     {
        case unknown: Exception => {
         println(s"Unknown exception: $unknown")
-        none
+        None
       }
     }
 }
-
-// COMMAND ----------
 
 //to audit log in db
 def auditlog_db = (args: Array[Any]) =>
@@ -82,8 +70,8 @@ def auditlog_db = (args: Array[Any]) =>
 // COMMAND ----------
 
 //to run any ddl or dml, custome query 
-//def get_load_entity = () =>
-//{
+def get_load_entity() : DataFrame =
+{
   
   //to get table details with columns to create table 
   val pushdown_query = """(Select t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,
@@ -97,5 +85,7 @@ def auditlog_db = (args: Array[Any]) =>
   t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive Order by t.SequenceofLoad Asc) as    TableEntity"""
   
   var df = get_dataframe(pushdown_query)
+  
+  return df
 
-//}
+}

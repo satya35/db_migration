@@ -87,3 +87,11 @@ val driver = "org.postgresql.Driver"
 // MAGIC     
 // MAGIC     #return the file name that was last modifed in the given directory
 // MAGIC     return df
+
+// COMMAND ----------
+
+// MAGIC %python
+// MAGIC #to get all latest file
+// MAGIC df = get_latest_modified_file_from_directory('/mnt/' )
+// MAGIC spark.catalog.dropTempView("df_FileList")
+// MAGIC df.createTempView("df_FileList")
