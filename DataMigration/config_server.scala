@@ -73,7 +73,10 @@ val driver = "org.postgresql.Driver"
 // MAGIC     for dir_path in dbutils.fs.ls(pPath):
 // MAGIC         if dir_path.isFile():
 // MAGIC             #os.stat gets statistics on a path. st_mtime gets the most recent content modification date time
-// MAGIC             yield [dir_path.path,datetime.fromtimestamp(os.stat('/' + dir_path.path.replace(':','')).st_ctime), datetime.fromtimestamp(os.stat('/' + dir_path.path.replace(':','')).st_mtime)]
+// MAGIC             filename, extension = os.path.splitext(dir_path.path)
+// MAGIC             #print(extension)
+// MAGIC             if extension ==".csv":
+// MAGIC                 yield [os.path.basename(dir_path.path),dir_path.path,datetime.fromtimestamp(os.stat('/' + dir_path.path.replace(':','')).st_ctime), datetime.fromtimestamp(os.stat('/' + dir_path.path.replace(':','')).st_mtime)]
 // MAGIC         elif dir_path.isDir() and pPath != dir_path.path:
 // MAGIC             #if the path is a directory, call the function on it again to check its contents
 // MAGIC             yield from get_dir_content(dir_path.path)
@@ -83,7 +86,7 @@ val driver = "org.postgresql.Driver"
 // MAGIC     #Call get_dir_content to get a list of all files in this directory and the last modified date time of each
 // MAGIC     vDirectoryContentsList = list(get_dir_content(pDirectory))
 // MAGIC 
-// MAGIC     df = spark.createDataFrame(vDirectoryContentsList,['FullFilePath','CreateDate','LastModifiedDateTime'])
+// MAGIC     df = spark.createDataFrame(vDirectoryContentsList,['FileName','FullFilePath','CreateDate','LastModifiedDateTime'])
 // MAGIC     
 // MAGIC     #return the file name that was last modifed in the given directory
 // MAGIC     return df

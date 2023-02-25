@@ -9,7 +9,7 @@ import org.apache.spark.sql.DataFrame
 // COMMAND ----------
 
 //def get_dataframe = (query: String)  =>
-def get_dataframe(query: String) : DataFrame = {
+def get_dataframe_db(query: String) : DataFrame = {
         val df_TableEntity = spark.read
                               .format("jdbc")
                               .option("driver", driver)
@@ -20,6 +20,17 @@ def get_dataframe(query: String) : DataFrame = {
          return df_TableEntity
 }
 
+//def get_dataframe to read file
+def get_dataframe_file(filepath: String) : DataFrame = {
+                              
+       var df_filedata = spark.read
+                              .option("header","true")
+                              .option("inferschema","true")
+                              .option("delimiter",",")
+                              .csv(filepath)
+  
+      return df_filedata
+}
 
 // COMMAND ----------
 
@@ -84,7 +95,7 @@ def get_load_entity() : DataFrame =
   Group by t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,t.DestinationTable,
   t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive Order by t.SequenceofLoad Asc) as    TableEntity"""
   
-  var df = get_dataframe(pushdown_query)
+  var df = get_dataframe_db(pushdown_query)
   
   return df
 
