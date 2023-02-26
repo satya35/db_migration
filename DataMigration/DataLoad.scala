@@ -1,5 +1,6 @@
 // Databricks notebook source
 // MAGIC %run ./job_run
+// MAGIC %run ./transformation
 
 // COMMAND ----------
 
@@ -21,33 +22,29 @@ for (row <- df.rdd.collect)
     var sourcetable = row.get(row.fieldIndex("sourcetable"))
     var destinationtable = row.get(row.fieldIndex("destinationtable"))
     var loadtype = row.get(row.fieldIndex("loadtype"))
-    var createtable = row.get(row.fieldIndex("createtable"))
+    var tableselect = row.get(row.fieldIndex("tableselect"))
     var tableqry = row.get(row.fieldIndex("tableqry"))
 
-    var postgressql_table = destinationschema + """.""" + destinationtable
+    var sql_table = destinationschema + """.""" + destinationtable
   
     var df_filepath = df_FileList.filter(df_FileList("FileName") === sourcetable).select(col("FullFilePath").cast("string"))
-
-    var filepath= type(df_filepath) 
   
-    if(sourcesystem == "AzureDatalake")
-     {
-        if (createtable == true)
-        {
-          var tabledrop = """ Drop Table If EXISTS """ + postgressql_table
-          var createtableqry = """ Create Table """ + postgressql_table + """ ( """ + tableqry + """)"""
-          
-          //drop table if exists
-          var dropquerystatus = jdbcrunquery(tabledrop)
-          
-          //create table from job table field entity
-          var createquerystatus = jdbcrunquery(createtableqry) //comment this line if want create the table from source data frame or use existing schema
+     for (row <- df_filepath.rdd.collect)
+     {     
+        var filepath = row.get(row.fieldIndex("FullFilePath"))
+        print(filepath)
+  
+        if(sourcesystem == "AzureDatalake")
+         {
+            //get start date and time
+            var loadstarttime = java.sql.Timestamp.from(java.time.Instant.now) 
+
+            //get source data
+            var df_sourcedata = get_dataframe_file(filepath.toString)
+           
+            var df_transsourcedata = set_dataconversion(tableselect, df_sourcedata)
+            
+            display (df_transsourcedata)
         }
-       
-        //get start date and time
-        var loadstarttime = java.sql.Timestamp.from(java.time.Instant.now) 
-       
-        //get source data
-        //var sourcedata = get_dataframe_file(filepath)
      }
-}
+ }

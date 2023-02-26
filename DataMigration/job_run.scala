@@ -24,7 +24,7 @@ def get_dataframe_db(query: String) : DataFrame = {
 def get_dataframe_file(filepath: String) : DataFrame = {
                               
        var df_filedata = spark.read
-                              .option("header","true")
+                              .option("header","false")
                               .option("inferschema","true")
                               .option("delimiter",",")
                               .csv(filepath)
@@ -87,7 +87,7 @@ def get_load_entity() : DataFrame =
   //to get table details with columns to create table 
   val pushdown_query = """(Select t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,
   t.DestinationTable,t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive,
-  STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType), ',' ORDER BY ColumnSequence)  AS tableqry 
+  STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType), ',' ORDER BY ColumnSequence)  AS tableqry, ,STRING_AGG(Concat('Try_Cast(' , sourcecolumn , ' AS ',DestinationDataType, ') As ' , DestinationColumn) , ',' ORDER BY ColumnSequence)  AS tablselect
   FROM config.TableEntity t Left Join config.TableFieldEntity f On t.SourceSchema = f.SourceSchema 
   And t.DestinationSchema = f.DestinationSchema 
   And t.SourceTable =f.SourceTable
