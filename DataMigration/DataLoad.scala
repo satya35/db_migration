@@ -1,5 +1,8 @@
 // Databricks notebook source
 // MAGIC %run ./job_run
+
+// COMMAND ----------
+
 // MAGIC %run ./transformation
 
 // COMMAND ----------
@@ -22,7 +25,7 @@ for (row <- df.rdd.collect)
     var sourcetable = row.get(row.fieldIndex("sourcetable"))
     var destinationtable = row.get(row.fieldIndex("destinationtable"))
     var loadtype = row.get(row.fieldIndex("loadtype"))
-    var tableselect = row.get(row.fieldIndex("tableselect"))
+    var tableselect = row.get(row.fieldIndex("tableselect")).toString
     var tableqry = row.get(row.fieldIndex("tableqry"))
 
     var sql_table = destinationschema + """.""" + destinationtable
@@ -31,9 +34,7 @@ for (row <- df.rdd.collect)
   
      for (row <- df_filepath.rdd.collect)
      {     
-        var filepath = row.get(row.fieldIndex("FullFilePath"))
-        print(filepath)
-  
+        var filepath = row.get(row.fieldIndex("FullFilePath"))  
         if(sourcesystem == "AzureDatalake")
          {
             //get start date and time
@@ -42,9 +43,12 @@ for (row <- df.rdd.collect)
             //get source data
             var df_sourcedata = get_dataframe_file(filepath.toString)
            
-            var df_transsourcedata = set_dataconversion(tableselect, df_sourcedata)
+            spark.catalog.dropTempView("tbl_filedata")
+            df_sourcedata.createTempView("tbl_filedata")
+  
+            //var df_transsourcedata = set_dataconversion(tableselect, df_sourcedata )
             
-            display (df_transsourcedata)
+            //display (df_transsourcedata)
         }
      }
  }

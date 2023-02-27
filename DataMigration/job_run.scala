@@ -87,10 +87,9 @@ def get_load_entity() : DataFrame =
   //to get table details with columns to create table 
   val pushdown_query = """(Select t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,
   t.DestinationTable,t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive,
-  STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType), ',' ORDER BY ColumnSequence)  AS tableqry, ,STRING_AGG(Concat('Try_Cast(' , sourcecolumn , ' AS ',DestinationDataType, ') As ' , DestinationColumn) , ',' ORDER BY ColumnSequence)  AS tablselect
+  STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType), ',' ORDER BY ColumnSequence)  AS tableqry,   STRING_AGG(Concat('cast(' , sourcecolumn , ' as ',DestinationDataType, ') as ' , DestinationColumn) , ',' ORDER BY ColumnSequence)  AS tableselect
   FROM config.TableEntity t Left Join config.TableFieldEntity f On t.SourceSchema = f.SourceSchema 
   And t.DestinationSchema = f.DestinationSchema 
-  And t.SourceTable =f.SourceTable
   And t.DestinationTable =f.DestinationTable 
   Group by t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,t.DestinationTable,
   t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive Order by t.SequenceofLoad Asc) as    TableEntity"""
