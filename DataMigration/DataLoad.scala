@@ -7,6 +7,10 @@
 
 // COMMAND ----------
 
+var df_TableEntity = get_load_entity()
+
+// COMMAND ----------
+
 //to get all tables details to load
 var df_TableEntity = get_load_entity()
 
@@ -27,6 +31,7 @@ for (row <- df.rdd.collect)
     var loadtype = row.get(row.fieldIndex("loadtype"))
     var tableselect = row.get(row.fieldIndex("tableselect")).toString
     var tableqry = row.get(row.fieldIndex("tableqry"))
+     var createtable = row.get(row.fieldIndex("createtable"))
 
     var sql_table = destinationschema + """.""" + destinationtable
   
