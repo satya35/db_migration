@@ -7,10 +7,6 @@
 
 // COMMAND ----------
 
-var df_TableEntity = get_load_entity()
-
-// COMMAND ----------
-
 //to get all tables details to load
 var df_TableEntity = get_load_entity()
 
@@ -83,6 +79,8 @@ for (row <- df.rdd.collect)
 
           //load audit details
           var dropquerystatus = auditlog_db(auditquery)
+           
+           display (df_sourcedata)
         }
      }
  }

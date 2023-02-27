@@ -87,8 +87,8 @@ def get_load_entity() : DataFrame =
   //to get table details with columns to create table 
   val pushdown_query = """(Select t.Id,t.SourceSystem,t.DestinationSystem,t.SourceSchema,t.DestinationSchema,t.SourceTable,
   t.DestinationTable,t.MainContainer,t.SubContainer,t.LoadType,t.CreateTable,t.SequenceofLoad,t.IsActive,
-  STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType),', ')  WITHIN GROUP ( ORDER BY ColumnSequence)  AS tableqry
-          ,STRING_AGG(Concat('cast(' , sourcecolumn , ' AS ',DestinationDataType, ') AS ' , DestinationColumn), ', ') WITHIN GROUP (  ORDER BY ColumnSequence)  AS tableselect
+ STRING_AGG(Concat(DestinationColumn ,' ', DestinationDataType), ',' ORDER BY ColumnSequence)  AS tableqry 
+          ,STRING_AGG(Concat('cast(' , sourcecolumn , ' as ',DestinationDataType, ') as ' , DestinationColumn) , ',' ORDER BY ColumnSequence)  AS tableselect
   FROM config.TableEntity t Left Join config.TableFieldEntity f On t.SourceSchema = f.SourceSchema 
   And t.DestinationSchema = f.DestinationSchema 
   And t.DestinationTable =f.DestinationTable 
