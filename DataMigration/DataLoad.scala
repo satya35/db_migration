@@ -39,16 +39,45 @@ for (row <- df.rdd.collect)
          {
             //get start date and time
             var loadstarttime = java.sql.Timestamp.from(java.time.Instant.now) 
+           
+              if (createtable == true)
+              {
+                var tabledrop = """ Drop Table If EXISTS """ + sql_table
+                var createtableqry = """ Create Table """ + sql_table + """ ( """ + tableqry + """)"""
 
+                //drop table if exists
+                var dropquerystatus = jdbcrunquery(tabledrop)
+
+                //create table from job table field entity
+                var createquerystatus = jdbcrunquery(createtableqry) 
+              }
+           
             //get source data
             var df_sourcedata = get_dataframe_file(filepath.toString)
            
             spark.catalog.dropTempView("tbl_filedata")
             df_sourcedata.createTempView("tbl_filedata")
   
-            //var df_transsourcedata = set_dataconversion(tableselect, df_sourcedata )
+            var df_transsourcedata = set_dataconversion(tableselect, df_sourcedata )
             
-            //display (df_transsourcedata)
+             if(df_transsourcedata.count() > 0) //check count of sql table
+             {
+               df_transsourcedata.write
+                     .format("jdbc")
+                     .mode("append") //comment this line if want create the table from source data frame oruse existing schema
+                     .option("url",url_postgres)
+                     .option("dbtable",sql_table)
+                     .option("schemaCheckEnabled", true) 
+                     .save() 
+             }
+              var loadendtime =  java.sql.Timestamp.from(java.time.Instant.now)
+
+            //audit log query
+          var auditquery = Array(sourcetable,destinationtable,loadstarttime,loadendtime,
+                                 df_transsourcedata.count(),df_transsourcedata.count(),"Success")
+
+          //load audit details
+          var dropquerystatus = auditlog_db(auditquery)
         }
      }
  }
